@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ToolData } from "./toolsCatalogSlice";
-import { deleteBooking, getBookings, updateEndDateForBooking } from "../../api/requests";
+import { deleteBooking, getBookings, getRaport, updateEndDateForBooking } from "../../api/requests";
 import { RootState } from "../store";
 
 export interface BookingItem {
@@ -29,6 +29,15 @@ export const loadBookings = createAsyncThunk(
     }
 )
 
+export const loadRaport = createAsyncThunk(
+    'bookings/loadRaport',
+    async () => {
+        const res = await getRaport()
+        return res.data.results;
+
+    }
+)
+
 export const deleteBookingItem = createAsyncThunk(
     'cart/deleteBooking',
     async ({ id }: { id: string }) => {
@@ -50,6 +59,16 @@ export const bookingsSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(loadBookings.fulfilled, (state, action) => {
+            state.items = action.payload.map((el: any) => ({
+                id: el.id,
+                tools: el.tools,
+                isVerified: el.is_verified,
+                sumPrice: el.sum_price,
+                dateStart: el.date_start,
+                dateEnd: el.date_end,
+            }))
+        })
+        builder.addCase(loadRaport.fulfilled, (state, action) => {
             state.items = action.payload.map((el: any) => ({
                 id: el.id,
                 tools: el.tools,

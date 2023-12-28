@@ -1,5 +1,5 @@
 from rest_framework.generics import ListCreateAPIView, GenericAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 from rest_framework import status
@@ -61,3 +61,15 @@ class UpdateBookingAPIView(GenericAPIView):
 
             return Response(status=status.HTTP_202_ACCEPTED)
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+class RaportAPIView(ListCreateAPIView):
+    http_method_names = ['get']
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    serializer_class = BookingSerializer
+
+    def get_queryset(self):
+        return Booking.objects.all()
+
+
+        

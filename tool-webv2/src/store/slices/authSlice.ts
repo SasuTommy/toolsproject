@@ -7,6 +7,7 @@ export interface AuthState {
     refreshToken?: string,
     keepInStore?: boolean,
     sentCodeEmail?: string | null | undefined,
+    isAdmin?: boolean,
 }
 
 const initialState: AuthState = {
@@ -14,6 +15,7 @@ const initialState: AuthState = {
     refreshToken: undefined,
     keepInStore: true,
     sentCodeEmail: undefined,
+    isAdmin: false,
 }
 
 export const login = createAsyncThunk(

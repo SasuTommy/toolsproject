@@ -22,7 +22,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name']
+        fields = ['email', 'first_name', 'last_name', 'is_staff']
 
 class ActivateAccountSerializer(serializers.Serializer):
     email = serializers.EmailField()

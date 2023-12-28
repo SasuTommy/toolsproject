@@ -1,7 +1,7 @@
 import { Layout, Menu } from "antd"
 import Sider from "antd/es/layout/Sider";
 import { ShoppingFilled, UserOutlined, ToolFilled, WalletFilled } from '@ant-design/icons';
-import React from "react";
+import React, { useEffect } from "react";
 import { Footer, Header } from "antd/es/layout/layout";
 import { useAppDispatch, useAppSelector } from "../hooks/storeHooks";
 import { selectAuthState } from "../store/slices/authSlice";
@@ -10,11 +10,19 @@ import { Account } from "./Account";
 import { ToolsList } from "./ToolsList";
 import { Cart } from "./Cart";
 import { Bookings } from "./Bookings";
+import { loadMe, selectIsAdmin } from "../store/slices/meSlice";
 
 export const Main = () => {
     const dispatch = useAppDispatch()
     const authState = useAppSelector(selectAuthState)
     const activeNavItem = useAppSelector(selectMenuActiveItem)
+    const isAdmin = useAppSelector(selectIsAdmin)
+
+    useEffect(() => {
+        if (authState.accessToken) {
+            dispatch(loadMe())
+        }
+    })
 
     const changeNavItem = (newNavItem: any) => {
         dispatch(setActiveItem({ newItem: parseInt(newNavItem.key) }))
@@ -72,11 +80,20 @@ export const Main = () => {
                 <Menu
                     theme="dark"
                     mode="inline"
-                    items={NAV_ITEMS.filter((i) => !i.authOnly || authState.accessToken !== undefined).map((navItem, index) => ({
-                        key: `${index}`,
-                        icon: React.createElement(navItem.icon),
-                        label: navItem.label,
-                    }))}
+                    items={NAV_ITEMS.filter((i) => !i.authOnly || authState.accessToken !== undefined).map((navItem, index) => {
+                        if (index === 3 && isAdmin) {
+                            return {
+                                key: `${index}`,
+                                icon: React.createElement(navItem.icon),
+                                label: 'Pokaż raport',
+                            }
+                        }
+                        return {
+                            key: `${index}`,
+                            icon: React.createElement(navItem.icon),
+                            label: navItem.label,
+                        }
+                    })}
                     onSelect={changeNavItem}
                     selectedKeys={[`${activeNavItem}`]}
                 />

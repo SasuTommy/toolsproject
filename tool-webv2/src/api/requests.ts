@@ -45,6 +45,10 @@ export function getBookings() {
     return axiosClient.get('/bookings/list')
 }
 
+export function getRaport() {
+    return axiosClient.get('/bookings/raport/')
+}
+
 export function deleteBooking(id: string) {
     return axiosClient.delete(`/bookings/list/${id}`)
 }

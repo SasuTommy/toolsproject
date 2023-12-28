@@ -6,6 +6,7 @@ export interface MeData {
     email: string,
     first_name: string,
     last_name: string,
+    is_staff: boolean,
 }
 
 export interface MeState {
@@ -41,4 +42,5 @@ export const meSlice = createSlice({
 
 export const { clearMeInfo } = meSlice.actions
 export const selectMeInfo = (state: RootState) => state.me.info
+export const selectIsAdmin = (state: RootState) => state.me.info?.is_staff ?? false
 export default meSlice.reducer

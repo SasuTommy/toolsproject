@@ -1,6 +1,7 @@
 import { Button, Card, Checkbox, Form, Input, notification } from "antd"
 import { useAppDispatch } from "../hooks/storeHooks"
 import { login } from "../store/slices/authSlice"
+import { loadMe } from "../store/slices/meSlice";
 
 export const SignIn = () => {
     const [api, contextHolder] = notification.useNotification();
@@ -8,7 +9,7 @@ export const SignIn = () => {
     const dispatch = useAppDispatch()
 
     const onFinish = (data: any) => {
-        dispatch(login({ email: data.email, password: data.password, keepInStore: data.remember })).then((data) => { 
+        dispatch(login({ email: data.email, password: data.password, keepInStore: data.remember })).then((data) => {
             if (data.type.includes('/rejected')) {
                 api.error({
                     message: 'Nieprawidłowe hasło lub email',
@@ -17,6 +18,7 @@ export const SignIn = () => {
                     duration: 1.5,
                 })
             }
+            dispatch(loadMe())
         })
     }
 

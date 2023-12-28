@@ -1,19 +1,29 @@
 import { Button, Layout, List, DatePicker } from "antd"
 import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/storeHooks"
-import { BookingItem, deleteBookingItem, loadBookings, selectBookings, updateEndDate } from "../store/slices/bookingsSlice"
+import { BookingItem, deleteBookingItem, loadBookings, loadRaport, selectBookings, updateEndDate } from "../store/slices/bookingsSlice"
 import { loadList } from "../store/slices/toolsCatalogSlice"
 import dayjs from "dayjs"
+import { selectIsAdmin } from "../store/slices/meSlice"
 
 export const Bookings = () => {
     const dispatch = useAppDispatch()
     const items = useAppSelector(selectBookings)
+    const isAdmin = useAppSelector(selectIsAdmin)
     const [datePickerId, setDatePickerId] = useState<string | null>(null)
     const [newDate, setNewDate] = useState<any>(null);
 
     useEffect(() => {
-        dispatch(loadBookings())
+        if (!isAdmin) {
+            dispatch(loadBookings())
+        }
     }, [items])
+
+    useEffect(() => {
+        if (isAdmin) {
+            dispatch(loadRaport())
+        }
+    }, [])
 
     const cancelBooking = (id: string) => {
         dispatch(deleteBookingItem({ id })).then((_) => {
@@ -29,7 +39,16 @@ export const Bookings = () => {
         })
     }
 
+    const getSum = () => {
+        let sum = 0;
+        items.forEach((i) => {
+            sum += i.sumPrice;
+        })
+        return sum
+    }
+
     const actions = (item: BookingItem): any => {
+        if (isAdmin) return []
         const items = []
 
         const isAvailableToCancel = !item.isVerified || dayjs(item.dateStart).diff(dayjs(), 'days') > 2
@@ -93,10 +112,14 @@ export const Bookings = () => {
                             title={`${item.dateStart} - ${item.dateEnd}`}
                             description={`Numer: ${item.id}`}
                         />
+                        {isAdmin ? <List.Item.Meta
+                            description={`Zamówienie o wartości: ${item.sumPrice} zł`}
+                        /> : null}
                         <p>Status: {item.isVerified ? 'Zaakceptowany' : 'Oczekujący'}</p>
                     </List.Item>
                 )}
             />
+            {isAdmin ? <h4 style={{ marginLeft: 24 }}>Zysk: <span style={{ color: 'green'}}>{ getSum() } zł</span></h4> : null}
         </Layout>
     )
 }
